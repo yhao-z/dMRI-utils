@@ -4,6 +4,7 @@ function b_noised = add_noisy(b, SNR)
 %
 % write by yinghao ZHANG, HIT
 
+b_noised = b;
 ind = find(b~=0);
 b_vec = b(ind);
 stdsignal = sqrt(sum(abs(b_vec).^2)/length(b_vec));
