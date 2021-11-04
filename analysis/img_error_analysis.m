@@ -8,7 +8,7 @@ function img_error_analysis(X, Xhat, Xhat2, freq, random)
 % written by yhao, Harbin Institute of Technology.
 
 
-if strcmp(freq, 'k-sapce')
+if strcmp(freq, 'k-space')
     X_d=fftshift(fftshift(X,1),2);
     Xhat_d=fftshift(fftshift(Xhat,1),2);
     Xhat2_d=fftshift(fftshift(Xhat2,1),2);
