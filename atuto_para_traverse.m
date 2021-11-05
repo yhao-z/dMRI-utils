@@ -20,6 +20,16 @@ function [metrics,varargout] = atuto_para_traverse(f,param,range,step,varargin)
 %     end
 % end
 % varargout = {X1,X2};
+% 
+% 简单函数测试
+% d = 100000; u = [1000 1000];
+% z.a = 1;
+% z.b = 1;
+% 
+% f = @(z) -norm([z.a,z.b]-u)^2;
+% f(z)
+% para_range = auto_para(f,z);
+% [metrics,X1,X2] = atuto_para_traverse(f,z,para_range,[1 1 1]);
 
 disp('[start auto_para_traverse ... ]')
 

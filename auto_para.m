@@ -7,6 +7,7 @@ function [range,opt_para,paras_all,metrics_all] = auto_para(f,param,varargin)
 % f = @(z) -norm([z.a,z.b]-u)^2;
 % f(z)
 % para_range = auto_para(f,z);
+% [metrics,X1,X2] = atuto_para_traverse(f,z,para_range,[1 1 1]);
 %
 % 记录问题
 % 1. step必须等于1
