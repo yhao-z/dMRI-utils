@@ -14,6 +14,8 @@ function [range,opt_para,paras_all,metrics_all] = auto_para(f,param,varargin)
 % 3. para和param乱用，应该把名称统一
 %
 
+disp('[start auto_para ... ]')
+
 % 解析输入
 expectedTypes = {'log','normal'};
 
@@ -157,6 +159,8 @@ elseif len_param == 3
     scatter3(X1(ind),X2(ind),X3(ind),abs(1000.^( abs(metrics_all(ind)-min(metrics_all(ind))+1)./abs(max(metrics_all(ind))-min(metrics_all(ind))+1) )));
     xlabel('param1');ylabel('param2');zlabel('param3')
 end
+
+disp('[End auto_para]')
 
 %% 1d
 function [range,opt_para,paras_all,metrics_all] = auto_param_1d(f,param,param_fields,param_order,log_or_normal,I_log_or_normal,step)
