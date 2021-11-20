@@ -1,4 +1,4 @@
-function [metrics,varargout] = atuto_para_traverse(f,param,range,step,varargin)
+function [metrics,varargout] = auto_para_traverse(f,param,range,step,varargin)
 % 能够根据range的范围遍历所有param结构体内参数的所有可能，并将得到的metric赋值给metrics张量
 % [metrics,X1,X2,X3] = atuto_para_traverse(f,z,para_range,[1 1 1]); %例子
 % 
@@ -29,11 +29,11 @@ function [metrics,varargout] = atuto_para_traverse(f,param,range,step,varargin)
 % f = @(z) -norm([z.a,z.b]-u)^2;
 % f(z)
 % para_range = auto_para(f,z);
-% [metrics,X1,X2] = atuto_para_traverse(f,z,para_range,[1 1 1]);
+% [metrics,X1,X2] = atuto_para_traverse(f,z,para_range,[1 1]);
 
 disp('[start auto_para_traverse ... ]')
 
-expectedTypes = {'log','normal'};
+expectedTypes = {'log','normal','dichotomy'};
 
 p = inputParser;
 addParameter(p,'type','log',@(x) any(validatestring(x,expectedTypes)));
@@ -57,6 +57,7 @@ str5 = [];
 str7 = [];
 str8 = [];
 str9 = [];
+str10 = [];
 for i = 1:len_para
     str1 = [str1, ' ','p',num2str(i),'_range = I_log_or_normal(range(',num2str(i),',1)).*(1:step(',num2str(i),'):10);'];
     str2 = [str2,',','X',num2str(i)];
@@ -66,6 +67,7 @@ for i = 1:len_para
     str7 = [str7,',','p',num2str(i),'_range == p',num2str(i),''];
     str8 = [str8,newline,'end'];
     str9 = [str9,',','X',num2str(i),'(max_ind)'];
+    str10 = [str10, ' ','p',num2str(i),'_range = dichotomy_range(range(',num2str(i),',:));'];
 end
 str2(1) = [];
 str3(1) = [];
@@ -74,7 +76,11 @@ str9(1) = [];
 
 str6 = 'metric = f(param);fprintf(''param = '');fprintf(''%15.1e'',cell2mat(struct2cell(param)));fprintf(''----> metric = %.4f \n'',metric);';
 
-eval(str1);
+if strcmp(p.Results.type,'dichotomy')
+    eval(str10);
+else
+    eval(str1);
+end
 eval(['[',str2,'] = ndgrid(',str3,');'])
 metrics = NaN(size(X1));
 
@@ -87,5 +93,60 @@ disp('--------------------------------------------------------------------------
 
 varargout = eval(['{',str2,'}']);
 
+str_sub = ['1',repmat(',1',1,len_para-1)];
+str_sub(end) = ':';
+for i = 1:len_para
+    if i == 1
+        dim_sort = [2:len_para, i];
+    elseif i == len_para
+        dim_sort = 1:len_para;
+    else
+        dim_sort = [1:i-1,i+1:len_para,i];
+    end
+
+    if length(dim_sort) == 1
+        dim_sort = [2 1];
+    end
+    plot_matrix = reshape(permute(metrics,dim_sort),[prod(size(metrics,dim_sort(1:end-1))),size(metrics,dim_sort(end))]);
+
+    Xi_sort = permute(eval(['X',num2str(i)]),dim_sort);
+    disp_matrix = NaN(size(plot_matrix,1)+2,size(plot_matrix,2));
+    disp_matrix(1,:) = eval(['(squeeze(Xi_sort(',str_sub,')))']);
+    disp_matrix(3:end,:) = plot_matrix;
+    disp(['=====param *',num2str(i),'*: the metric trend====='])
+    disp(disp_matrix)
+
+    figure('Name',['[auto_para_tranverse]the parameter ',num2str(i)]);hold on;
+    set(gca,'xtick',[]);
+    xlabel(['range:   ', eval(['num2str(convert2row(squeeze(Xi_sort(',str_sub,'))))'])])
+    for ii = 1:size(plot_matrix,1)
+        plot(plot_matrix(ii,:));
+    end
+end
 
 disp('[End auto_para_traverse]')
+end
+
+
+function range_out = dichotomy_range(range_in)
+log_range = floor(log10(range_in));
+prefix_num = range_in./(10.^log_range);
+if prefix_num(1) ==1 && prefix_num(2) == 1
+    range_out = range_in(1);
+elseif log_range(1) == log_range(2)
+    range_out = 10^log_range(1).*(prefix_num(1):prefix_num(2));
+else
+    range_out = [10^log_range(1).*(prefix_num(1):9) 10^log_range(2).*(1:prefix_num(2))];
+end
+end
+
+function v2 = convert2row(v)
+if isrow(v)
+    v2 = v;
+else 
+    v2 = v.';
+end
+end
+
+
+    

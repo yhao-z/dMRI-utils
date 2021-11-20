@@ -81,9 +81,9 @@ end
 figure;sgtitle('k-space error')
 for i = range
     subplot(121);
-    imshow(fftshift(Xe_hat(:,:,i)),[0 0.008]); xlabel('the first');
+    imshow(fftshift(Xe_hat(:,:,i)),[0 max_freq./100]); xlabel('the first');
     subplot(122);
-    imshow(fftshift(Xe_hat2(:,:,i)),[0 0.008]); xlabel('the second');
+    imshow(fftshift(Xe_hat2(:,:,i)),[0 max_freq./100]); xlabel('the second');
     pause(0.3);
 end
 
