@@ -13,5 +13,5 @@ for i=1:n3
     threshold_for_sampling=pdf_vardens2(b(round(undersampling_ratio*length(b))));
     pdf_vardens3=zeros(n1,1);
     pdf_vardens3(pdf_vardens2>=threshold_for_sampling)=1;
-    sampling_mat(:,:,i)=repmat(logical(ifftshift(pdf_vardens3)) , [1 n2]);
+    sampling_mat(:,:,i)=repmat(logical(pdf_vardens3) , [1 n2]);
 end

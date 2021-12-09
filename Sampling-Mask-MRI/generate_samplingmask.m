@@ -26,9 +26,9 @@ elseif strcmp(type,'usd_y')
 
 % radio sampling
 elseif strcmp(type,'radial')
-line = uds_ratio_or_lines;
-[T3D] = strucrand(n1,n2,n3,line);
-sampling_mask = fftshift(T3D);
+    line = uds_ratio_or_lines;
+    [T3D] = strucrand(n1,n2,n3,line);
+    sampling_mask = T3D;
 else 
     error(sprintf(['type needs to be','\n',...
         'vds   ----> variable density random 2d sampling','\n', ...

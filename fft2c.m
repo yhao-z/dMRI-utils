@@ -1,10 +1,16 @@
-function X = fft2c(x)
+function res = fft2c(x)
 
-% X = fft2c(x)
-% 
-% orthonormal uncentered 2D fft for tensor
-%
-%@yhao
+S = size(x);
+fctr = S(1)*S(2);
 
-X = 1/sqrt(  size(x,1)*size(x,2)   )*fft2(x);
+x = reshape(x,S(1),S(2),prod(S(3:end)));
+
+res = zeros(size(x));
+for n=1:size(x,3)
+	res(:,:,n) = 1/sqrt(fctr)*fftshift(fft2(ifftshift(x(:,:,n))));
+end
+
+res = reshape(res,S);
+
+
 

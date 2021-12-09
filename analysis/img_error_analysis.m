@@ -44,7 +44,8 @@ if random == 1
 elseif random == 0
     range = 1:n3;
 end
-%%  ±”Ú÷ÿΩ®Õº
+range = 14;
+%% X-Y ±”Ú÷ÿΩ®Õº
 figure; sgtitle('image')
 for i = range
     subplot(141);
@@ -57,7 +58,7 @@ for i = range
     imshow(abs(x_diff(:,:,i)),[]); xlabel('diff between 1 and 2');
     pause(0.3);
 end
-%%  ±”ÚŒÛ≤ÓÕº
+%% X-Y ±”ÚŒÛ≤ÓÕº
 figure;sgtitle('image error')
 for i = range
     subplot(121);
@@ -66,7 +67,7 @@ for i = range
     imshow(xhat2_err(:,:,i),[max_err/8 max_err/3]); xlabel('the second');
     pause(0.3);
 end
-%% ∆µ”Ú÷ÿΩ®Õº
+%% X-Y∆µ”Ú÷ÿΩ®Õº
 figure;sgtitle('k-space')
 for i = range
     subplot(131);
@@ -77,13 +78,43 @@ for i = range
     imshow(abs(Xhat2_d(:,:,i)),[0 max_freq./100]); xlabel('the second');
     pause(0.3);
 end
-%% ∆µ”ÚŒÛ≤ÓÕº
+%% X-Y∆µ”ÚŒÛ≤ÓÕº
 figure;sgtitle('k-space error')
 for i = range
     subplot(121);
     imshow(fftshift(Xe_hat(:,:,i)),[0 max_freq./100]); xlabel('the first');
     subplot(122);
     imshow(fftshift(Xe_hat2(:,:,i)),[0 max_freq./100]); xlabel('the second');
+    pause(0.3);
+end
+
+%%
+if random == 1 
+    range = randi(n2); 
+elseif random == 0
+    range = 1:n2;
+end
+range = 75;
+%% X-T ±”Ú÷ÿΩ®Õº
+figure; sgtitle('image')
+for i = range
+    subplot(141);
+    imshow(squeeze(abs(x_d(:,i,:))),[]); xlabel('ground truth');
+    subplot(142);
+    imshow(squeeze(abs(xhat_d(:,i,:))),[]); xlabel('the first');
+    subplot(143);
+    imshow(squeeze(abs(xhat2_d(:,i,:))),[]); xlabel('the second');
+    subplot(144);
+    imshow(squeeze(abs(x_diff(:,i,:))),[]); xlabel('diff between 1 and 2');
+    pause(0.3);
+end
+%% X-T ±”ÚŒÛ≤ÓÕº
+figure;sgtitle('image error')
+for i = range
+    subplot(121);
+    imshow(squeeze(xhat_err(:,i,:)),[max_err/8 max_err/3]); xlabel('the first');
+    subplot(122);
+    imshow(squeeze(xhat2_err(:,i,:)),[max_err/8 max_err/3]); xlabel('the second');
     pause(0.3);
 end
 
