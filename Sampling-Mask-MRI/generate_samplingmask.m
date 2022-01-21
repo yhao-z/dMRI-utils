@@ -4,10 +4,12 @@ n1 = res(1);n2 = res(2);n3 = res(3);
 % variable density random 2d sampling
 if strcmp(type,'vds')
     sampling_mask = genrate_binary_sampling_map(n1,n2,uds_ratio_or_lines,n3); 
+    sampling_mask = double(sampling_mask);
 
-% variable density randome x sampling
+% variable density randome y sampling
 elseif strcmp(type,'vds_y')
     sampling_mask = genrate_ylines_sampling_map(n1,n2,uds_ratio_or_lines,n3); 
+    sampling_mask = double(sampling_mask);
 
 % uniform density random 2d sampling
 elseif strcmp(type,'uds')
@@ -16,7 +18,7 @@ elseif strcmp(type,'uds')
     sampling_mask(omega) = 1;
 
 % uniform density randome x sampling
-elseif strcmp(type,'usd_y')
+elseif strcmp(type,'uds_y')
     raws = round(n1*uds_ratio_or_lines);
     ind_sample = randi(n1,raws,n3);
     sampling_mask = zeros(n1,n2,n3);
@@ -32,8 +34,8 @@ elseif strcmp(type,'radial')
 else 
     error(sprintf(['type needs to be','\n',...
         'vds   ----> variable density random 2d sampling','\n', ...
-        'vds_x ----> variable density randome x sampling','\n', ...
+        'vds_y ----> variable density randome y sampling','\n', ...
         'uds   ----> uniform density random 2d sampling','\n', ...
-        'uds_x ----> uniform density randome x sampling','\n', ...
+        'uds_y ----> uniform density random y sampling','\n', ...
         'radial----> radial sampling']));
 end

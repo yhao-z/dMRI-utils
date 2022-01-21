@@ -23,7 +23,7 @@ for frameno = 1:n3
  
  % Round the collected data to the nearest cartesian location   
  kcart=floor(kloc_all);
-plot(kcart,'*');title('k locations after nearest neighbor interpolation: Center (0,0)');
+% plot(kcart,'*');title('k locations after nearest neighbor interpolation: Center (0,0)');
 
 % Next, shift the cartesian locations accordingly such that the center
 % is now at (n1/2,n1/2); {Previously the center in kcart was (0,0)}
