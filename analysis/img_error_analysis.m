@@ -1,127 +1,90 @@
-function img_error_analysis(X, Xhat, Xhat2, freq, random)
-% display the reconstructed image, k-space and the error images
+function img_error_analysis(X, random, varargin)
+% display the reconstructed image and the error images
 % input:
-%       X, Xhat, Xhat2: ground truth, first image, second image
-%       freq: 'k-space' or 'image' to distinguish the data type
+%       X: ground truth
 %       random: 0/1, 0 display all frames, 1 display a random frame
+%       varargin: many images by different methods
+%
+% example: 
+%       img_error_analysis(label, 0, LR, ktSLR, DCCNN, SLR, TLR);
 %
 % written by yhao, Harbin Institute of Technology.
 
 
-if strcmp(freq, 'k-space')
-    X_d=fftshift(fftshift(X,1),2);
-    Xhat_d=fftshift(fftshift(Xhat,1),2);
-    Xhat2_d=fftshift(fftshift(Xhat2,1),2);
-    x_d = ifft2(X);
-    xhat_d =ifft2(Xhat);
-    xhat2_d = ifft2(Xhat2);
-elseif strcmp(freq, 'image')
-    x_d = X;
-    xhat_d = Xhat;
-    xhat2_d = Xhat2;
-    X = fft2(x_d);
-    Xhat = fft2(xhat_d);
-    Xhat2 = fft2(xhat2_d);
-    X_d=fftshift(fftshift(X,1),2);
-    Xhat_d=fftshift(fftshift(Xhat,1),2);
-    Xhat2_d=fftshift(fftshift(Xhat2,1),2);
-else
-    error('freq have to be k-space or image') 
-end
-
+gap = 5;
 [n1,n2,n3] = size(X);
-x_diff = abs(xhat_d -xhat2_d);
-xhat_err = abs(xhat_d-x_d);
-xhat2_err = abs(xhat2_d-x_d);
-max_err = max(max(xhat_err(:)),max(xhat2_err(:)));
-temp = abs(X_d);
-max_freq = max(temp(:));
-Xe_hat = abs(Xhat-X);
-Xe_hat2 = abs(Xhat2-X);
+Ninput = length(varargin);
+Xin = cell(1,Ninput);
+Xerr = cell(1,Ninput);
+for i = 1:nargin-2
+    Xin{i} = varargin{i};
+    Xerr{i} = abs(varargin{i}-X);
+end
+max_x = max(abs(X),[], 'all');
+max_err = max(cell2mat(Xerr), [], 'all');
 
 if random == 1 
     range = randi(n3); 
 elseif random == 0
     range = 1:n3;
 end
-range = 14;
-%% X-Y ±”Ú÷ÿΩ®Õº
-figure; sgtitle('image')
+% range = 17;
+%% X-YÕºœÒ
+Xplot = NaN(n1,n2+gap,Ninput+1);
+figure('Name','image'); 
 for i = range
-    subplot(141);
-    imshow(abs(x_d(:,:,i)),[]); xlabel('ground truth');
-    subplot(142);
-    imshow(abs(xhat_d(:,:,i)),[]); xlabel('the first');
-    subplot(143);
-    imshow(abs(xhat2_d(:,:,i)),[]); xlabel('the second');
-    subplot(144);
-    imshow(abs(x_diff(:,:,i)),[]); xlabel('diff between 1 and 2');
+    Xplot(:,1:n2,1) = abs(X(:,:,i));
+    Xplot(:,n2+1:end,1) = max_x;
+    for j = 1:Ninput
+        Xplot(:,1:n2,j+1) = abs(Xin{j}(:,:,i));
+        Xplot(:,n2+1:end,j+1) = max_x;
+    end
+    imshow3(Xplot, [0 0.3*max_x], [1, Ninput+1])
     pause(0.3);
 end
-%% X-Y ±”ÚŒÛ≤ÓÕº
-figure;sgtitle('image error')
+%% X-YŒÛ≤Ó
+Xerrplot = NaN(n1,n2+gap,Ninput);
+figure('Name','image error');
 for i = range
-    subplot(121);
-    imshow(xhat_err(:,:,i),[max_err/8 max_err/3]); xlabel('the first');
-    subplot(122);
-    imshow(xhat2_err(:,:,i),[max_err/8 max_err/3]); xlabel('the second');
+    for j = 1:Ninput
+        Xerrplot(:,1:n2,j) = abs(Xerr{j}(:,:,i));
+        Xerrplot(:,n2+1:end,j) = max_err;
+    end
+    imshow3(Xerrplot, [0 max_err/2], [1, Ninput])
     pause(0.3);
 end
-%% X-Y∆µ”Ú÷ÿΩ®Õº
-figure;sgtitle('k-space')
-for i = range
-    subplot(131);
-    imshow(abs(X_d(:,:,i)),[0 max_freq./100]); xlabel('ground truth');
-    subplot(132);
-    imshow(abs(Xhat_d(:,:,i)),[0 max_freq./100]); xlabel('the first');
-    subplot(133);
-    imshow(abs(Xhat2_d(:,:,i)),[0 max_freq./100]); xlabel('the second');
-    pause(0.3);
-end
-%% X-Y∆µ”ÚŒÛ≤ÓÕº
-figure;sgtitle('k-space error')
-for i = range
-    subplot(121);
-    imshow(fftshift(Xe_hat(:,:,i)),[0 max_freq./100]); xlabel('the first');
-    subplot(122);
-    imshow(fftshift(Xe_hat2(:,:,i)),[0 max_freq./100]); xlabel('the second');
-    pause(0.3);
-end
-
 %%
 if random == 1 
     range = randi(n2); 
 elseif random == 0
     range = 1:n2;
 end
-range = 75;
-%% X-T ±”Ú÷ÿΩ®Õº
-figure; sgtitle('image')
+range = 100;
+%% X-TÕºœÒ
+Xplot = NaN(n3,n2+gap,Ninput+1);
+figure('Name','image');
 for i = range
-    subplot(141);
-    imshow(squeeze(abs(x_d(:,i,:))),[]); xlabel('ground truth');
-    subplot(142);
-    imshow(squeeze(abs(xhat_d(:,i,:))),[]); xlabel('the first');
-    subplot(143);
-    imshow(squeeze(abs(xhat2_d(:,i,:))),[]); xlabel('the second');
-    subplot(144);
-    imshow(squeeze(abs(x_diff(:,i,:))),[]); xlabel('diff between 1 and 2');
+    Xplot(:,1:n2,1) = squeeze(abs(X(i,:,:)))';
+    Xplot(:,n2+1:end,1) = max_x;
+    for j = 1:Ninput
+        Xplot(:,1:n2,j+1) = squeeze(abs(Xin{j}(i,:,:)))';
+        Xplot(:,n2+1:end,j+1) = max_x;
+    end
+    imshow3(Xplot, [0 0.5*max_x], [1, Ninput+1])
     pause(0.3);
 end
-%% X-T ±”ÚŒÛ≤ÓÕº
-figure;sgtitle('image error')
+%% X-TŒÛ≤Ó
+Xerrplot = NaN(n3,n2+gap,Ninput);
+figure('Name','image error');
 for i = range
-    subplot(121);
-    imshow(squeeze(xhat_err(:,i,:)),[max_err/8 max_err/3]); xlabel('the first');
-    subplot(122);
-    imshow(squeeze(xhat2_err(:,i,:)),[max_err/8 max_err/3]); xlabel('the second');
+    for j = 1:Ninput
+        Xerrplot(:,1:n2,j) = squeeze(abs(Xerr{j}(i,:,:)))';
+        Xerrplot(:,n2+1:end,j) = max_err;
+    end
+    imshow3(Xerrplot, [0 max_err/5], [1, Ninput])
     pause(0.3);
 end
-
 end
-
-
-
 
 
 
