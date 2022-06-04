@@ -39,7 +39,7 @@ for i = range
         Xplot(:,1:n2,j+1) = abs(Xin{j}(:,:,i));
         Xplot(:,n2+1:end,j+1) = max_x;
     end
-    imshow3(Xplot, [0 0.3*max_x], [1, Ninput+1])
+    imshow3(Xplot, [0 0.5*max_x], [1, Ninput+1])
     pause(0.3);
 end
 %% X-YÎó²î
@@ -50,7 +50,7 @@ for i = range
         Xerrplot(:,1:n2,j) = abs(Xerr{j}(:,:,i));
         Xerrplot(:,n2+1:end,j) = max_err;
     end
-    imshow3(Xerrplot, [0 max_err/2], [1, Ninput])
+    imshow3(Xerrplot, [0 max_err/3], [1, Ninput])
     pause(0.3);
 end
 %%

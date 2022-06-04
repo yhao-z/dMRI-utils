@@ -22,9 +22,9 @@ else
     error('type must be abs(0)/real(1)/imag(2)')
 end
 
-X_d=fftshift(fftshift(X,1),2);
-Xhat_d=fftshift(fftshift(Xhat,1),2);
-Xhat2_d=fftshift(fftshift(Xhat2,1),2);
+X_d=X;
+Xhat_d=Xhat;
+Xhat2_d=Xhat2;
 
 Xe_hat = abs(ReImAbs(Xhat_d-X_d));
 Xe_hat2 = abs(ReImAbs(Xhat2_d-X_d));
