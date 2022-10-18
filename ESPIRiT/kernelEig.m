@@ -48,8 +48,9 @@ for n=1:size(kernel,4)
     % 按照推导，kernel是对校准区域进行滤波操作，所以卷积核应该是(kernel(end:-1:1,end:-1:1,:,n))，实际就是需要倒过来一下
     % 为什么又多了个conj呢？主要是后面做SVD并不是按照论文中的推导来的（见后面解释）
     % sqrt(imSize(1)*imSize(2))系数是因为，正交FFT的卷积定理的原因，多出来一个系数，实际上乘在外围更合适
+    % 因为每个kernel的norm都是1，所以变换后矩阵的最大值是1.
 end
-KERNEL = KERNEL/sqrt(prod(kSize)); % 按照推导，有M^-1系数，所以要除一下
+KERNEL = KERNEL/sqrt(prod(kSize)); % 按照推导，有M^-1系数，所以要除一下；除完之后，按照coil维度，向量的norm<1；所以后面奇异值分解后，奇异值都<1
 
 EigenVecs = zeros(imSize(1), imSize(2), nc, min(nc,nv));
 EigenVals = zeros(imSize(1), imSize(2), min(nc,nv));
