@@ -35,14 +35,17 @@ else
     [u,s,v] = svd(k,'econ');
 end
 
-k = k*v;
+k = k*v;  % 我不知道为什么他要在这里做一个svd，然后乘一下v，然后又在最后相当于右乘了个v^H，总体就抵消了，相当于成了个I，不知道为什么
 kernel = reshape(k,[kSize,nv,nc]); kernel = permute(kernel,[1,2,4,3]);
 
 
 KERNEL = zeros(imSize(1), imSize(2), size(kernel,3), size(kernel,4));
 for n=1:size(kernel,4)
-    KERNEL(:,:,:,n) = (fft2c(zpad(conj(kernel(end:-1:1,end:-1:1,:,n))*sqrt(imSize(1)*imSize(2)), ...
-        [imSize(1), imSize(2), size(kernel,3)])));
+    KERNEL(:,:,:,n) = (fft2c(zpad(  conj(kernel(end:-1:1,end:-1:1,:,n))*sqrt(imSize(1)*imSize(2)), [imSize(1), imSize(2), size(kernel,3)]  ))); 
+    % 首先，这里用fft肯定是不对的，作者歪打正着了，实际上论文里面就有点小错误，我已经在zotero中标注了
+    % fft2c(zpad(  conj(kernel(end:-1:1,end:-1:1,:,n))  ) 相当于 conj(  ifft2c(zpad(  (kernel(end:-1:1,end:-1:1,:,n))  )
+    % 按照推导，kernel是对校准区域进行滤波操作，所以卷积核应该是(kernel(end:-1:1,end:-1:1,:,n))，实际就是需要倒过来一下
+    % 为什么又多了个conj呢？主要是后面做SVD并不是按照论文中的推导来的（见后面解释）
 end
 KERNEL = KERNEL/sqrt(prod(kSize));
 
@@ -55,7 +58,7 @@ for n=1:prod(imSize)
     mtx = squeeze(KERNEL(x,y,:,:));
 
     %[C,D] = eig(mtx*mtx');
-    [C,D,V] = svd(mtx,'econ');
+    [C,D,V] = svd(mtx,'econ'); % 这里做SVD的并不是论文中的G，按照后面来看，应该是G^H才对，所以上面才多了一个conj
     
     ph = repmat(exp(-i*angle(C(1,:))),[size(C,1),1]);
     C = v*(C.*ph);
