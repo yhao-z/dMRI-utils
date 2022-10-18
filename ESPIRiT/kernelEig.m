@@ -44,11 +44,12 @@ for n=1:size(kernel,4)
     KERNEL(:,:,:,n) = (fft2c(zpad(  conj(kernel(end:-1:1,end:-1:1,:,n))*sqrt(imSize(1)*imSize(2)), [imSize(1), imSize(2), size(kernel,3)]  ))); 
     % 首先，这里用fft肯定是不对的，作者歪打正着了，实际上论文里面就有点小错误，我已经在zotero中标注了
     % fft2c(zpad(  conj(kernel(end:-1:1,end:-1:1,:,n))  ) 相当于 conj(  ifft2c(zpad(  (kernel(end:-1:1,end:-1:1,:,n))  )
+    % 上面这个性质是因为正交FFT才有，否则会有一个N系数，但是正交的话没有
     % 按照推导，kernel是对校准区域进行滤波操作，所以卷积核应该是(kernel(end:-1:1,end:-1:1,:,n))，实际就是需要倒过来一下
     % 为什么又多了个conj呢？主要是后面做SVD并不是按照论文中的推导来的（见后面解释）
+    % sqrt(imSize(1)*imSize(2))系数是因为，正交FFT的卷积定理的原因，多出来一个系数，实际上乘在外围更合适
 end
-KERNEL = KERNEL/sqrt(prod(kSize));
-
+KERNEL = KERNEL/sqrt(prod(kSize)); % 按照推导，有M^-1系数，所以要除一下
 
 EigenVecs = zeros(imSize(1), imSize(2), nc, min(nc,nv));
 EigenVals = zeros(imSize(1), imSize(2), min(nc,nv));
